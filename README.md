@@ -1,50 +1,54 @@
-# Superstore Sales Dashboard (2011–2014)
+# Telco Customer Churn Analysis (SQL + Python)
 
-An interactive Power BI dashboard that analyzes 51,290 orders from a global retail store to find where the business makes money, where it loses money, and how discounts affect profit.
-
-![Dashboard](dashboard.png)
+Analysis of 7,043 telecom customers to find **who leaves, and why**, so the company can target retention efforts where they matter most.
 
 ## Business Questions
-1. Which region earns the most profit?
-2. Which products are losing money?
-3. How do sales change month by month?
-4. Does a higher discount hurt profit?
+1. What percentage of customers leave?
+2. Which contract types churn the most?
+3. Do new customers leave more than long-term ones?
+4. Do customers with higher monthly bills leave more?
 
 ## Tools Used
-- **Excel / Python (pandas):** data cleaning
-- **Power BI Desktop:** dashboard, DAX measure, slicers
-- **GitHub:** project documentation
+- **Python (pandas, matplotlib):** data cleaning and charts
+- **SQL (SQLite):** aggregation and analysis queries
+- **Jupyter Notebook:** analysis workflow
+- **GitHub:** documentation
+
+## Data
+IBM Telco Customer Churn dataset: 7,043 customers, 21 columns (contract, tenure, services, charges, churn status).
 
 ## Data Cleaning
-- Converted `sales` from text to numbers (values like `1,648` contained commas)
-- Standardized dates: the file mixed `d/m/yyyy` and `d-m-yyyy` formats; all dates are now `yyyy-mm-dd`
-- Checked for blanks, duplicates, and that ship date is never before order date (all passed)
-- Added `year_month` and `profit_margin` columns
-- Fixed one order with zero sales that caused a divide-by-zero in `profit_margin`
+- Checked for blank values and duplicates (none found)
+- `TotalCharges` was stored as text because 11 rows contained blank spaces. Converted it to numeric. All 11 customers had tenure 0 (brand-new customers with no bill yet), so their total was set to 0
+- Created `ChurnFlag` (Yes = 1, No = 0) to calculate churn rates
+- Converted `SeniorCitizen` from 0/1 to No/Yes for readable charts
 
-## Dashboard Features
-- KPI cards: Total Sales, Total Profit, Profit Margin % (DAX measure: `DIVIDE(SUM(profit), SUM(sales))`)
-- Profit by Region and by Sub-Category
-- Monthly Sales Trend
-- Average Profit by Discount Level
-- Year and Region slicers for interactive filtering
-
-## Key Insights
-| Metric | Result |
+## Key Findings
+| Question | Result |
 |---|---|
-| Total sales / profit | $12.64M sales, $1.47M profit, 11.6% margin |
-| Top region | **Central**: $311K profit, the highest of 13 regions |
-| Top sub-category | **Copiers**: $259K profit |
-| Loss-making sub-category | **Tables**: -$64K, the only sub-category with a net loss |
-| Sales growth | Sales grew from $2.26M (2011) to $4.30M (2014), about **+90%** |
-| Discounts | Orders with **more than 30% discount** (10,361 orders) lost about **$794K** combined, while orders with 30% or less discount earned about **$2.26M** |
+| Overall churn | **26.5%** of customers left (1,869 of 7,043) |
+| Contract type | Month-to-month **42.7%**, One year **11.3%**, Two year **2.8%** |
+| Tenure | First-year customers **47.4%**, versus **9.5%** for customers with 49+ months |
+| Monthly bill | Highest churn in the $70 to $90 range (**38.0%**); lowest under $35 (**10.9%**). Churned customers paid more on average ($74.44 vs $61.27) |
+
+**Additional segments**
+- Month-to-month customers make up 55% of the base but **88.6% of all churners**
+- New customers (12 months or less) on month-to-month contracts churn at **51.4%**
+- Customers on longer contracts with more than 12 months of tenure churn at only **6.8%**
+
+## Charts
+![Overall](chart1_overall.png)
+![Contract](chart2_contract.png)
+![Tenure](chart3_tenure.png)
+![Bill](chart4_bill.png)
 
 ## Recommendations
-1. **Cap discounts at around 30%.** Above that level, orders consistently lose money. The average order with 40%+ discount loses about $76, while an order with up to 20% discount earns about $57.
-2. **Review the Tables sub-category.** It is the only net loss-maker, and its heaviest losses come from 60%–70% discount orders.
-3. **Grow in Central and North**, the strongest regions, and review pricing in low-profit regions such as Canada and Southeast Asia.
+1. **Move month-to-month customers to longer contracts**, for example with a small discount for a one-year plan. This is the largest source of churn.
+2. **Focus retention on the first 12 months.** More than half of all churners leave in their first year, so onboarding calls and early offers would have the biggest impact.
+3. **Review the $70 to $90 plans.** Customers paying this much leave the most, so check whether the value matches the price.
 
 ## Files
-- `Superstore_Dashboard.pbix`: Power BI dashboard
-- `Superstore_Clean.csv`: cleaned dataset
-- `dashboard.png`: dashboard screenshot
+- `churn_analysis.ipynb`: full analysis (cleaning, SQL queries, charts)
+- `Telco_Clean.csv`: cleaned dataset
+- `Telco-Customer-Churn.csv`: original dataset
+- `chart1_overall.png` to `chart4_bill.png`: charts
